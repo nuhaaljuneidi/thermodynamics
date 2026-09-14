@@ -419,10 +419,10 @@ footer{ color:var(--muted); font-size:.78rem; text-align:center; margin-top:8px;
         '<div class="cyl-head">' + headHTML + '</div>' +
         '<div class="cyl-tag" data-tag="' + i + '"></div>' +
         '<div class="cyl-svg-wrap">' +
-          '<svg data-svg="' + i + '" viewBox="0 0 120 180" width="120" height="180" aria-hidden="true">' +
-            '<line x1="10" y1="168" x2="110" y2="168" stroke="var(--muted)" stroke-width="2"/>' +
-            (function(){ var h=""; for(var x=14;x<108;x+=9){ h+='<line x1="'+x+'" y1="168" x2="'+(x-6)+'" y2="176" stroke="var(--muted)" stroke-width="1.4"/>'; } return h; })() +
-            '<rect x="22" y="16" width="76" height="152" rx="3" fill="var(--surface-2)" stroke="var(--line)" stroke-width="2"/>' +
+          '<svg data-svg="' + i + '" viewBox="0 0 120 240" width="120" height="240" aria-hidden="true">' +
+            '<line x1="10" y1="228" x2="110" y2="228" stroke="var(--muted)" stroke-width="2"/>' +
+            (function(){ var h=""; for(var x=14;x<108;x+=9){ h+='<line x1="'+x+'" y1="228" x2="'+(x-6)+'" y2="236" stroke="var(--muted)" stroke-width="1.4"/>'; } return h; })() +
+            '<rect x="22" y="76" width="76" height="152" rx="3" fill="var(--surface-2)" stroke="var(--line)" stroke-width="2"/>' +
             '<rect data-gas="' + i + '" x="25" width="70" fill="var(--series-color)" fill-opacity="0.16"/>' +
             '<g data-weights="' + i + '"></g>' +
             '<rect data-piston="' + i + '" x="24" width="72" height="9" rx="1.5" fill="var(--accent)" stroke="var(--accent-strong)" stroke-width="1"/>' +
@@ -460,7 +460,10 @@ footer{ color:var(--muted); font-size:.78rem; text-align:center; margin-top:8px;
   }
 
   // ---------------- Update cylinder visuals for current s ----------------
-  var CYL_TOP = 18, CYL_BOTTOM = 166, CYL_HEIGHT = CYL_BOTTOM - CYL_TOP;
+  // The cylinder is drawn low in a taller viewBox so there's headroom above it —
+  // enough for a full 6-block weight stack to ride on the piston without ever
+  // clipping out of view, even at full stroke.
+  var CYL_TOP = 76, CYL_BOTTOM = 228, CYL_HEIGHT = CYL_BOTTOM - CYL_TOP;
 
   function updateCylinders(){
     var vals = readInputs();
@@ -479,14 +482,16 @@ footer{ color:var(--muted); font-size:.78rem; text-align:center; margin-top:8px;
       gasEl.setAttribute("y", gasY);
       gasEl.setAttribute("height", gasHeight);
 
+      var pistonTopY = gasY - 9;
       var pistonEl = els.rig.querySelector('[data-piston="' + i + '"]');
-      pistonEl.setAttribute("y", gasY - 9);
+      pistonEl.setAttribute("y", pistonTopY);
 
+      // Weights ride directly on the piston and rise with it as the gas expands.
       var wStack = els.rig.querySelector('[data-weights="' + i + '"]');
       var nBlocks = Math.max(1, Math.round((P / Pmax) * 6));
       var blocks = "";
       for (var b = 0; b < nBlocks; b++){
-        var by = gasY - 9 - 6 - b * 7;
+        var by = pistonTopY - 6 - b * 7;
         blocks += '<rect x="32" y="' + by + '" width="56" height="5" rx="1" fill="var(--weight)"/>';
       }
       wStack.innerHTML = blocks;
