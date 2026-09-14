@@ -106,6 +106,17 @@ header{
 header .heading{ max-width:640px; }
 header h1{ font-size:clamp(1.7rem,3.6vw,2.5rem); color:var(--ink); }
 header p{ margin:.5rem 0 0; color:var(--ink-secondary); font-size:.98rem; max-width:56ch; }
+header p.note{
+  margin-top:.7rem;
+  padding:.55rem .8rem;
+  background:var(--accent-tint);
+  border-left:3px solid var(--accent);
+  border-radius:4px;
+  color:var(--ink);
+  font-size:.9rem;
+  max-width:56ch;
+}
+header p.note strong{ color:var(--accent-strong); }
 .side{ display:flex; flex-direction:column; align-items:flex-end; gap:10px; flex:0 0 auto; }
 .credit{ text-align:right; }
 .credit .name{
@@ -206,7 +217,7 @@ button:hover{ filter:brightness(0.97); }
 .cyl-head{ display:flex; justify-content:space-between; align-items:baseline; gap:8px; }
 .cyl-head .n-label{ font-family:"Barlow Condensed",sans-serif; font-weight:700; font-size:1.15rem; }
 .cyl-head .n-input{
-  width:4.2ch; font-family:"IBM Plex Mono",monospace; font-size:1rem;
+  width:9ch; font-family:"IBM Plex Mono",monospace; font-size:1rem;
   border:1px solid var(--grid); border-radius:3px; background:var(--surface-2); color:var(--ink);
   padding:1px 4px;
 }
@@ -261,8 +272,9 @@ footer{ color:var(--muted); font-size:.78rem; text-align:center; margin-top:8px;
 <header>
   <div class="heading">
     <div class="eyebrow">Piston&ndash;cylinder &middot; boundary work</div>
-    <h1>Same start. Same finish. Different path.</h1>
+    <h1>Same start. Different polytropic paths.</h1>
     <p>Four gas samples begin at the same pressure and volume and are driven to the same final volume &mdash; each along its own polytropic path <span class="mono">PV<sup>n</sup> = const</span>. Watch the final pressure and the work differ even though every piston ends at the same spot. Defaults match Example 2.1: p&#8321; = 3 bar, V&#8321; = 0.1 m&sup3;, V&#8322; = 0.2 m&sup3;.</p>
+    <p class="note"><strong>Try it:</strong> every <span class="mono">n</span> value next to a cylinder is editable &mdash; click into it and type a new exponent to see that cylinder, its readouts, and its curve on the chart update immediately.</p>
   </div>
   <div class="side">
     <div class="credit">
