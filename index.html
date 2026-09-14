@@ -1,0 +1,690 @@
+<title>Polytropic Compression Lab</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+:root{
+  color-scheme: light;
+  --bg:#EDF1F5;
+  --surface:#FFFFFF;
+  --surface-2:#F5F8FB;
+  --ink:#16283C;
+  --ink-secondary:#4C6178;
+  --muted:#8CA0B3;
+  --line:#2C5C8C;
+  --grid:#D7E2EC;
+  --accent:#B9762F;
+  --accent-strong:#8F5A22;
+  --accent-tint:#F1E0C9;
+  --weight:#5B6B7A;
+  --series-0:#2a78d6;
+  --series-1:#eb6834;
+  --series-2:#1baf7a;
+  --series-3:#4C6178;
+  --focus:#2C5C8C;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --bg:#0F2A47;
+    --surface:#123453;
+    --surface-2:#163C5E;
+    --ink:#EAF2FA;
+    --ink-secondary:#A9C0D6;
+    --muted:#6E8BA6;
+    --line:#7FC4E8;
+    --grid:#1D4468;
+    --accent:#E0A05C;
+    --accent-strong:#F1C58A;
+    --accent-tint:#3A2E1C;
+    --weight:#9FB6CC;
+    --series-0:#3987e5;
+    --series-1:#d95926;
+    --series-2:#199e70;
+    --series-3:#A9C0D6;
+    --focus:#7FC4E8;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --bg:#0F2A47;
+  --surface:#123453;
+  --surface-2:#163C5E;
+  --ink:#EAF2FA;
+  --ink-secondary:#A9C0D6;
+  --muted:#6E8BA6;
+  --line:#7FC4E8;
+  --grid:#1D4468;
+  --accent:#E0A05C;
+  --accent-strong:#F1C58A;
+  --accent-tint:#3A2E1C;
+  --weight:#9FB6CC;
+  --series-0:#3987e5;
+  --series-1:#d95926;
+  --series-2:#199e70;
+  --series-3:#A9C0D6;
+  --focus:#7FC4E8;
+}
+
+*{box-sizing:border-box;}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:"Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  padding-inline:20px;
+  padding-block:24px 48px;
+  max-width:1180px;
+  margin-inline:auto;
+}
+h1,h2,h3{
+  font-family:"Barlow Condensed", system-ui, sans-serif;
+  font-weight:700;
+  letter-spacing:.01em;
+  margin:0;
+  text-wrap:balance;
+}
+.mono{ font-family:"IBM Plex Mono", ui-monospace, monospace; font-variant-numeric:tabular-nums; }
+.eyebrow{
+  font-family:"Barlow Condensed", sans-serif;
+  font-weight:600;
+  font-size:.78rem;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--ink-secondary);
+}
+
+/* ---------- Header / title block ---------- */
+header{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:space-between;
+  align-items:flex-end;
+  border-bottom:2px solid var(--line);
+  padding-bottom:18px;
+  margin-bottom:22px;
+}
+header .heading{ max-width:640px; }
+header h1{ font-size:clamp(1.7rem,3.6vw,2.5rem); color:var(--ink); }
+header p{ margin:.5rem 0 0; color:var(--ink-secondary); font-size:.98rem; max-width:56ch; }
+.side{ display:flex; flex-direction:column; align-items:flex-end; gap:10px; flex:0 0 auto; }
+.credit{ text-align:right; }
+.credit .name{
+  font-family:"Barlow Condensed", sans-serif;
+  font-weight:700;
+  font-size:clamp(1.3rem,2.6vw,1.85rem);
+  color:var(--ink);
+  letter-spacing:.01em;
+  white-space:nowrap;
+}
+.credit .sub{ font-size:.78rem; color:var(--accent); font-weight:600; letter-spacing:.06em; text-transform:uppercase; margin-top:2px; }
+.titleblock{
+  border:1.5px solid var(--line);
+  font-family:"IBM Plex Mono", monospace;
+  font-size:.7rem;
+  color:var(--ink-secondary);
+  flex:0 0 auto;
+}
+.titleblock .row{
+  display:grid;
+  grid-template-columns:auto auto;
+  gap:2px 10px;
+  padding:6px 10px;
+  border-bottom:1px solid var(--grid);
+}
+.titleblock .row:last-child{ border-bottom:none; }
+.titleblock .row b{ color:var(--ink); font-weight:600; }
+
+/* ---------- Controls ---------- */
+.controls{
+  display:flex;
+  flex-wrap:wrap;
+  gap:14px 26px;
+  align-items:flex-end;
+  background:var(--surface);
+  border:1px solid var(--grid);
+  border-radius:6px;
+  padding:16px 18px;
+  margin-bottom:22px;
+}
+.field{ display:flex; flex-direction:column; gap:4px; }
+.field label{
+  font-size:.72rem; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--ink-secondary); font-weight:600;
+}
+.field .unit{ color:var(--muted); font-weight:500; text-transform:none; letter-spacing:0; }
+.field input[type=number]{
+  font-family:"IBM Plex Mono", monospace;
+  font-size:.95rem;
+  width:9ch;
+  padding:6px 8px;
+  border:1px solid var(--grid);
+  border-radius:4px;
+  background:var(--surface-2);
+  color:var(--ink);
+}
+.field input[type=number]:focus-visible{ outline:2px solid var(--focus); outline-offset:1px; }
+.transport{ display:flex; gap:8px; margin-left:auto; align-items:center; }
+button{
+  font-family:"Public Sans", sans-serif;
+  font-weight:600;
+  font-size:.88rem;
+  padding:9px 16px;
+  border-radius:5px;
+  border:1px solid var(--line);
+  background:var(--surface-2);
+  color:var(--ink);
+  cursor:pointer;
+}
+button.primary{ background:var(--accent); border-color:var(--accent-strong); color:#241505; }
+:root[data-theme="dark"] button.primary, @media (prefers-color-scheme:dark){ button.primary{ color:#241505; } }
+button:focus-visible{ outline:2px solid var(--focus); outline-offset:2px; }
+button:hover{ filter:brightness(0.97); }
+.scrub{ display:flex; align-items:center; gap:10px; flex:1 1 220px; min-width:180px; }
+.scrub input[type=range]{ flex:1; accent-color:var(--accent); }
+
+/* ---------- Cylinder cards ---------- */
+.rig{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(210px,1fr));
+  gap:16px;
+  margin-bottom:26px;
+}
+.cyl-card{
+  background:var(--surface);
+  border:1px solid var(--grid);
+  border-top:4px solid var(--series-color);
+  border-radius:6px;
+  padding:14px 14px 12px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  cursor:pointer;
+  text-align:left;
+}
+.cyl-card.active{ box-shadow:0 0 0 2px var(--series-color) inset; }
+.cyl-card:focus-visible{ outline:2px solid var(--focus); outline-offset:2px; }
+.cyl-head{ display:flex; justify-content:space-between; align-items:baseline; gap:8px; }
+.cyl-head .n-label{ font-family:"Barlow Condensed",sans-serif; font-weight:700; font-size:1.15rem; }
+.cyl-head .n-input{
+  width:4.2ch; font-family:"IBM Plex Mono",monospace; font-size:1rem;
+  border:1px solid var(--grid); border-radius:3px; background:var(--surface-2); color:var(--ink);
+  padding:1px 4px;
+}
+.cyl-tag{ font-size:.72rem; color:var(--ink-secondary); min-height:1.2em; }
+.cyl-svg-wrap{ display:flex; justify-content:center; }
+.readout{
+  display:flex; justify-content:space-between; font-size:.82rem; color:var(--ink-secondary);
+  border-top:1px dashed var(--grid); padding-top:6px;
+}
+.readout b{ color:var(--ink); font-family:"IBM Plex Mono",monospace; font-weight:600; }
+
+/* ---------- Chart + table ---------- */
+.panel{
+  background:var(--surface);
+  border:1px solid var(--grid);
+  border-radius:6px;
+  padding:18px;
+  margin-bottom:22px;
+}
+.panel h2{ font-size:1.25rem; margin-bottom:2px; }
+.panel .sub{ color:var(--ink-secondary); font-size:.85rem; margin-bottom:12px; }
+.chart-wrap{ position:relative; }
+#pvchart{ width:100%; height:auto; overflow:visible; }
+.tooltip{
+  position:absolute; pointer-events:none; background:var(--ink); color:var(--bg);
+  font-family:"IBM Plex Mono",monospace; font-size:.72rem; padding:5px 8px; border-radius:4px;
+  transform:translate(-50%,-115%); white-space:nowrap; opacity:0; transition:opacity .1s;
+}
+.legend{ display:flex; flex-wrap:wrap; gap:14px; margin-top:10px; font-size:.82rem; color:var(--ink-secondary); }
+.legend .item{ display:flex; align-items:center; gap:6px; }
+.legend .swatch{ width:14px; height:3px; border-radius:2px; }
+.legend .swatch.dash{ background-image:repeating-linear-gradient(90deg,var(--series-3) 0 5px, transparent 5px 9px); }
+
+table{ width:100%; border-collapse:collapse; font-size:.88rem; margin-top:6px; }
+thead th{
+  text-align:right; font-family:"Barlow Condensed",sans-serif; font-weight:600; letter-spacing:.04em;
+  text-transform:uppercase; font-size:.72rem; color:var(--ink-secondary); padding:6px 8px; border-bottom:2px solid var(--grid);
+}
+thead th:first-child, tbody td:first-child{ text-align:left; }
+tbody td{ text-align:right; padding:7px 8px; border-bottom:1px solid var(--grid); font-family:"IBM Plex Mono",monospace; }
+tbody tr.active-row{ background:var(--surface-2); }
+.dot{ display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:6px; vertical-align:-1px; }
+
+footer{ color:var(--muted); font-size:.78rem; text-align:center; margin-top:8px; }
+
+@media (max-width:640px){
+  .titleblock{ display:none; }
+  .transport{ margin-left:0; width:100%; }
+}
+</style>
+
+<header>
+  <div class="heading">
+    <div class="eyebrow">Piston&ndash;cylinder &middot; boundary work</div>
+    <h1>Same start. Same finish. Different path.</h1>
+    <p>Four gas samples begin at the same pressure and volume and are driven to the same final volume &mdash; each along its own polytropic path <span class="mono">PV<sup>n</sup> = const</span>. Watch the final pressure and the work differ even though every piston ends at the same spot. Defaults match Example 2.1: p&#8321; = 3 bar, V&#8321; = 0.1 m&sup3;, V&#8322; = 0.2 m&sup3;.</p>
+  </div>
+  <div class="side">
+    <div class="credit">
+      <div class="name">Dr. Nuha Aljuneidi</div>
+      <div class="sub">Thermodynamics &middot; ERAU</div>
+    </div>
+    <div class="titleblock" aria-hidden="true">
+      <div class="row"><span>COURSE</span><b>ES 305 &middot; Thermo</b></div>
+      <div class="row"><span>DWG NO.</span><b>CH02&ndash;PV&ndash;01</b></div>
+      <div class="row"><span>SCALE</span><b>NTS</b></div>
+    </div>
+  </div>
+</header>
+
+<section class="controls">
+  <div class="field">
+    <label for="P1">P<sub>1</sub> <span class="unit">(kPa)</span></label>
+    <input type="number" id="P1" value="300" min="10" step="10">
+  </div>
+  <div class="field">
+    <label for="V1">V<sub>1</sub> <span class="unit">(m&sup3;)</span></label>
+    <input type="number" id="V1" value="0.10" min="0.01" step="0.01">
+  </div>
+  <div class="field">
+    <label for="V2">V<sub>2</sub> <span class="unit">(m&sup3;)</span></label>
+    <input type="number" id="V2" value="0.20" min="0.01" step="0.01">
+  </div>
+  <div class="scrub">
+    <label for="scrub" style="font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-secondary);font-weight:600;">Stroke</label>
+    <input type="range" id="scrub" min="0" max="1" step="0.001" value="0">
+  </div>
+  <div class="transport">
+    <button id="playBtn" class="primary" type="button">&#9654; Play</button>
+    <button id="resetBtn" type="button">&#8634; Reset</button>
+  </div>
+</section>
+
+<section class="rig" id="rig"></section>
+
+<section class="panel">
+  <h2>Pressure&ndash;volume diagram</h2>
+  <div class="sub">Click a cylinder (or a row below) to shade the work done along that path. Hover the plot to read a path.</div>
+  <div class="chart-wrap">
+    <svg id="pvchart" viewBox="0 0 620 340" role="img" aria-label="Pressure versus volume for four polytropic paths"></svg>
+    <div class="tooltip" id="tooltip"></div>
+  </div>
+  <div class="legend" id="legend"></div>
+</section>
+
+<section class="panel">
+  <h2>Results</h2>
+  <div class="sub">Work done <i>by</i> the gas, <span class="mono">W = &int; P dV</span> &mdash; positive for expansion (V&#8322; &gt; V&#8321;), negative for compression. As n &rarr; &infin; the path steepens toward constant volume and W &rarr; 0.</div>
+  <div style="overflow-x:auto;">
+  <table>
+    <thead><tr><th>Path</th><th>Type</th><th>P&#8322; (kPa)</th><th>W (kJ)</th><th>Direction</th></tr></thead>
+    <tbody id="resultsBody"></tbody>
+  </table>
+  </div>
+</section>
+
+<footer>Model assumes a slow (quasi-equilibrium) process, ideal for teaching &mdash; not a real-time dynamic simulation.</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  var STATIONS = [
+    { n: 0,   colorVar: "--series-0", dash: false },
+    { n: 1,   colorVar: "--series-1", dash: false },
+    { n: 1.5, colorVar: "--series-2", dash: false },
+    { n: Infinity, colorVar: "--series-3", dash: true, isLimit: true }
+  ];
+
+  var els = {
+    rig: document.getElementById("rig"),
+    P1: document.getElementById("P1"),
+    V1: document.getElementById("V1"),
+    V2: document.getElementById("V2"),
+    scrub: document.getElementById("scrub"),
+    playBtn: document.getElementById("playBtn"),
+    resetBtn: document.getElementById("resetBtn"),
+    chart: document.getElementById("pvchart"),
+    tooltip: document.getElementById("tooltip"),
+    legend: document.getElementById("legend"),
+    resultsBody: document.getElementById("resultsBody")
+  };
+
+  var state = { s: 0, playing: false, activeIdx: null, lastT: null };
+
+  function cssVar(name){
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  }
+
+  function classify(st){
+    if (st.isLimit) return "Constant volume — never reaches V₂";
+    var n = st.n;
+    if (Math.abs(n) < 1e-6) return "Constant pressure";
+    if (Math.abs(n - 1) < 1e-6) return "Isothermal";
+    if (n >= 2.5) return "Steep — approaching the n → ∞ limit";
+    return "Polytropic";
+  }
+
+  function pressureAt(n, P1, V1, V){
+    return P1 * Math.pow(V1 / V, n);
+  }
+
+  function stationVolume(st, vals, s){
+    return st.isLimit ? vals.V1 : volumeAt(vals.V1, vals.V2, s);
+  }
+
+  function stationPressure(st, vals, V){
+    return st.isLimit ? vals.P1 : pressureAt(st.n, vals.P1, vals.V1, V);
+  }
+
+  function stationWork(st, vals){
+    if (st.isLimit) return 0; // ΔV = 0, so no boundary work
+    var n = st.n, P1 = vals.P1, V1 = vals.V1, V2 = vals.V2;
+    var P2 = pressureAt(n, P1, V1, V2);
+    if (Math.abs(n - 1) < 1e-6){
+      return P1 * V1 * Math.log(V2 / V1);
+    }
+    return (P2 * V2 - P1 * V1) / (1 - n);
+  }
+
+  function stationLabel(st){
+    return st.isLimit ? "n → ∞" : ("n=" + st.n);
+  }
+
+  function readInputs(){
+    var P1 = parseFloat(els.P1.value) || 1;
+    var V1 = parseFloat(els.V1.value) || 0.01;
+    var V2 = parseFloat(els.V2.value) || 0.01;
+    if (V1 === V2) V2 = V1 * 0.9;
+    return { P1: P1, V1: V1, V2: V2 };
+  }
+
+  function volumeAt(V1, V2, s){ return V1 + (V2 - V1) * s; }
+
+  // ---------------- Build cylinder cards ----------------
+  function buildRig(){
+    els.rig.innerHTML = "";
+    STATIONS.forEach(function(st, i){
+      var card = document.createElement("button");
+      card.type = "button";
+      card.className = "cyl-card";
+      card.style.setProperty("--series-color", "var(" + st.colorVar + ")");
+      card.setAttribute("data-idx", i);
+
+      var headHTML = st.isLimit
+        ? '<span class="n-label">n &rarr; &infin;</span>'
+        : '<span class="n-label">n = <input class="n-input" type="number" step="0.1" value="' + st.n + '" data-idx="' + i + '" onclick="event.stopPropagation()"></span>';
+
+      card.innerHTML =
+        '<div class="cyl-head">' + headHTML + '</div>' +
+        '<div class="cyl-tag" data-tag="' + i + '"></div>' +
+        '<div class="cyl-svg-wrap">' +
+          '<svg data-svg="' + i + '" viewBox="0 0 120 180" width="120" height="180" aria-hidden="true">' +
+            '<line x1="10" y1="168" x2="110" y2="168" stroke="var(--muted)" stroke-width="2"/>' +
+            (function(){ var h=""; for(var x=14;x<108;x+=9){ h+='<line x1="'+x+'" y1="168" x2="'+(x-6)+'" y2="176" stroke="var(--muted)" stroke-width="1.4"/>'; } return h; })() +
+            '<rect x="22" y="16" width="76" height="152" rx="3" fill="var(--surface-2)" stroke="var(--line)" stroke-width="2"/>' +
+            '<rect data-gas="' + i + '" x="25" width="70" fill="var(--series-color)" fill-opacity="0.16"/>' +
+            '<g data-weights="' + i + '"></g>' +
+            '<rect data-piston="' + i + '" x="24" width="72" height="9" rx="1.5" fill="var(--accent)" stroke="var(--accent-strong)" stroke-width="1"/>' +
+          '</svg>' +
+        '</div>' +
+        '<div class="readout"><span>V</span><b data-v="' + i + '">&ndash;</b></div>' +
+        '<div class="readout"><span>P</span><b data-p="' + i + '">&ndash;</b></div>';
+
+      card.addEventListener("click", function(){
+        state.activeIdx = (state.activeIdx === i) ? null : i;
+        renderChart();
+        renderResults();
+        updateActiveCards();
+      });
+      els.rig.appendChild(card);
+    });
+
+    STATIONS.forEach(function(st, i){
+      var inp = els.rig.querySelector('.n-input[data-idx="' + i + '"]');
+      if (!inp) return;
+      inp.addEventListener("input", function(){
+        var v = parseFloat(inp.value);
+        STATIONS[i].n = isFinite(v) ? v : 0;
+        renderAll();
+      });
+    });
+  }
+
+  function updateActiveCards(){
+    var cards = els.rig.querySelectorAll(".cyl-card");
+    cards.forEach(function(c){
+      var idx = parseInt(c.getAttribute("data-idx"), 10);
+      c.classList.toggle("active", idx === state.activeIdx);
+    });
+  }
+
+  // ---------------- Update cylinder visuals for current s ----------------
+  var CYL_TOP = 18, CYL_BOTTOM = 166, CYL_HEIGHT = CYL_BOTTOM - CYL_TOP;
+
+  function updateCylinders(){
+    var vals = readInputs();
+    var Vmin = Math.min(vals.V1, vals.V2), Vmax = Math.max(vals.V1, vals.V2);
+    var Pmax = vals.P1;
+    STATIONS.forEach(function(st){ Pmax = Math.max(Pmax, stationPressure(st, vals, vals.V2)); });
+
+    STATIONS.forEach(function(st, i){
+      var V = stationVolume(st, vals, state.s);
+      var P = stationPressure(st, vals, V);
+      var frac = (V - Vmin) / (Vmax - Vmin || 1); // 0..1 within [Vmin,Vmax]
+      var gasHeight = CYL_HEIGHT * (0.12 + 0.86 * frac);
+      var gasY = CYL_BOTTOM - gasHeight;
+
+      var gasEl = els.rig.querySelector('[data-gas="' + i + '"]');
+      gasEl.setAttribute("y", gasY);
+      gasEl.setAttribute("height", gasHeight);
+
+      var pistonEl = els.rig.querySelector('[data-piston="' + i + '"]');
+      pistonEl.setAttribute("y", gasY - 9);
+
+      var wStack = els.rig.querySelector('[data-weights="' + i + '"]');
+      var nBlocks = Math.max(1, Math.round((P / Pmax) * 6));
+      var blocks = "";
+      for (var b = 0; b < nBlocks; b++){
+        var by = gasY - 9 - 6 - b * 7;
+        blocks += '<rect x="32" y="' + by + '" width="56" height="5" rx="1" fill="var(--weight)"/>';
+      }
+      wStack.innerHTML = blocks;
+
+      els.rig.querySelector('[data-v="' + i + '"]').textContent = V.toFixed(3) + " m³";
+      els.rig.querySelector('[data-p="' + i + '"]').textContent = Math.round(P) + " kPa";
+      els.rig.querySelector('[data-tag="' + i + '"]').textContent = classify(st);
+    });
+  }
+
+  // ---------------- Chart ----------------
+  var M = { l: 56, r: 18, t: 16, b: 44 }, CW = 620, CHh = 340;
+
+  function chartScales(vals){
+    var Vmin = Math.min(vals.V1, vals.V2), Vmax = Math.max(vals.V1, vals.V2);
+    var pad = (Vmax - Vmin) * 0.12 || Vmax*0.1;
+    Vmin -= pad; Vmax += pad;
+    var Pmax = vals.P1;
+    STATIONS.forEach(function(st){ Pmax = Math.max(Pmax, stationPressure(st, vals, vals.V2)); });
+    var Pmin = 0, PmaxPad = Pmax * 1.1;
+
+    function x(V){ return M.l + (V - Vmin) / (Vmax - Vmin) * (CW - M.l - M.r); }
+    function y(P){ return CHh - M.b - (P - Pmin) / (PmaxPad - Pmin) * (CHh - M.t - M.b); }
+    return { x: x, y: y, Vmin: Vmin, Vmax: Vmax, Pmin: Pmin, Pmax: PmaxPad };
+  }
+
+  function pathPoints(st, vals, scales, steps){
+    if (st.isLimit){
+      // n → ∞: a vertical line at V₁ — the process never leaves V₁
+      var xV1 = scales.x(vals.V1);
+      return [[xV1, scales.y(0), vals.V1, 0], [xV1, scales.y(vals.P1), vals.V1, vals.P1]];
+    }
+    steps = steps || 40;
+    var pts = [];
+    for (var k = 0; k <= steps; k++){
+      var V = vals.V1 + (vals.V2 - vals.V1) * (k / steps);
+      var P = pressureAt(st.n, vals.P1, vals.V1, V);
+      pts.push([scales.x(V), scales.y(P), V, P]);
+    }
+    return pts;
+  }
+
+  function renderChart(){
+    var vals = readInputs();
+    var scales = chartScales(vals);
+    var ink = cssVar("--ink-secondary"), grid = cssVar("--grid"), muted = cssVar("--muted");
+    var svg = els.chart;
+    var parts = [];
+
+    // gridlines + axes
+    var yTicks = 5;
+    for (var i = 0; i <= yTicks; i++){
+      var P = scales.Pmin + (scales.Pmax - scales.Pmin) * (i / yTicks);
+      var yy = scales.y(P);
+      parts.push('<line x1="' + M.l + '" y1="' + yy + '" x2="' + (CW - M.r) + '" y2="' + yy + '" stroke="' + grid + '" stroke-width="1"/>');
+      parts.push('<text x="' + (M.l - 8) + '" y="' + (yy + 4) + '" text-anchor="end" font-size="11" font-family="IBM Plex Mono, monospace" fill="' + ink + '">' + Math.round(P) + '</text>');
+    }
+    var xTicks = 5;
+    for (var j = 0; j <= xTicks; j++){
+      var V = scales.Vmin + (scales.Vmax - scales.Vmin) * (j / xTicks);
+      var xx = scales.x(V);
+      parts.push('<text x="' + xx + '" y="' + (CHh - M.b + 18) + '" text-anchor="middle" font-size="11" font-family="IBM Plex Mono, monospace" fill="' + ink + '">' + V.toFixed(2) + '</text>');
+    }
+    parts.push('<line x1="' + M.l + '" y1="' + (CHh-M.b) + '" x2="' + (CW-M.r) + '" y2="' + (CHh-M.b) + '" stroke="' + muted + '" stroke-width="1.5"/>');
+    parts.push('<line x1="' + M.l + '" y1="' + M.t + '" x2="' + M.l + '" y2="' + (CHh-M.b) + '" stroke="' + muted + '" stroke-width="1.5"/>');
+    parts.push('<text x="' + ((CW+M.l-M.r)/2) + '" y="' + (CHh-6) + '" text-anchor="middle" font-size="12" fill="' + ink + '" font-family="Public Sans, sans-serif">Volume, V (m³)</text>');
+    parts.push('<text x="16" y="' + ((CHh-M.b+M.t)/2) + '" text-anchor="middle" font-size="12" fill="' + ink + '" font-family="Public Sans, sans-serif" transform="rotate(-90 16 ' + ((CHh-M.b+M.t)/2) + ')">Pressure, P (kPa)</text>');
+
+    STATIONS.forEach(function(st, idx){
+      var color = "var(" + st.colorVar + ")";
+      var pts = pathPoints(st, vals, scales);
+      var d = pts.map(function(p,k){ return (k===0?"M":"L") + p[0].toFixed(1) + "," + p[1].toFixed(1); }).join(" ");
+
+      if (state.activeIdx === idx){
+        var areaD = d + " L" + pts[pts.length-1][0].toFixed(1) + "," + scales.y(0).toFixed(1) +
+                    " L" + pts[0][0].toFixed(1) + "," + scales.y(0).toFixed(1) + " Z";
+        parts.push('<path d="' + areaD + '" fill="' + color + '" fill-opacity="0.14" stroke="none"/>');
+      }
+
+      parts.push('<path d="' + d + '" fill="none" stroke="' + color + '" stroke-width="' + (state.activeIdx===idx?3.2:2.2) + '" ' + (st.dash ? 'stroke-dasharray="6 5"' : '') + '/>');
+
+      // current position marker
+      var V = stationVolume(st, vals, state.s);
+      var P = stationPressure(st, vals, V);
+      parts.push('<circle cx="' + scales.x(V).toFixed(1) + '" cy="' + scales.y(P).toFixed(1) + '" r="4.5" fill="' + color + '" stroke="' + cssVar("--surface") + '" stroke-width="1.5"/>');
+
+      // end label
+      var last = pts[pts.length-1];
+      parts.push('<text x="' + (last[0] + 6) + '" y="' + (last[1] - 4) + '" font-size="11" font-family="IBM Plex Mono, monospace" fill="' + ink + '">' + stationLabel(st) + '</text>');
+    });
+
+    svg.innerHTML = parts.join("");
+  }
+
+  function renderLegend(){
+    els.legend.innerHTML = STATIONS.map(function(st, i){
+      return '<span class="item"><span class="swatch' + (st.dash?' dash':'') + '" style="background:' + (st.dash?'transparent':'var(' + st.colorVar + ')') + '"></span>' + stationLabel(st) + '</span>';
+    }).join("");
+  }
+
+  function renderResults(){
+    var vals = readInputs();
+    els.resultsBody.innerHTML = STATIONS.map(function(st, i){
+      var P2 = st.isLimit ? vals.P1 : pressureAt(st.n, vals.P1, vals.V1, vals.V2);
+      var W = stationWork(st, vals);
+      var dir = st.isLimit ? "none — ΔV = 0" : (W < 0 ? "on the gas" : (W > 0 ? "by the gas" : "—"));
+      var active = state.activeIdx === i ? ' class="active-row"' : "";
+      var p2Cell = st.isLimit ? (Math.round(P2) + " (fixed)") : String(Math.round(P2));
+      return "<tr" + active + '><td><span class="dot" style="background:var(' + st.colorVar + ')"></span>' + stationLabel(st) + "</td><td>" + classify(st) + "</td><td>" + p2Cell + "</td><td>" + W.toFixed(1) + "</td><td>" + dir + "</td></tr>";
+    }).join("");
+  }
+
+  function renderAll(){
+    updateCylinders();
+    renderChart();
+    renderLegend();
+    renderResults();
+  }
+
+  // ---------------- Interaction: hover tooltip ----------------
+  els.chart.addEventListener("mousemove", function(e){
+    var rect = els.chart.getBoundingClientRect();
+    var scaleX = CW / rect.width, scaleY = CHh / rect.height;
+    var mx = (e.clientX - rect.left) * scaleX;
+    var my = (e.clientY - rect.top) * scaleY;
+    var vals = readInputs();
+    var scales = chartScales(vals);
+
+    var best = null, bestDist = Infinity, bestSt = null;
+    STATIONS.forEach(function(st){
+      var pts = pathPoints(st, vals, scales, 60);
+      pts.forEach(function(p){
+        var dist = Math.hypot(p[0]-mx, p[1]-my);
+        if (dist < bestDist){ bestDist = dist; best = p; bestSt = st; }
+      });
+    });
+    if (best && bestDist < 26){
+      els.tooltip.style.opacity = "1";
+      els.tooltip.style.left = (best[0] / scaleX) + "px";
+      els.tooltip.style.top = (best[1] / scaleY) + "px";
+      els.tooltip.textContent = stationLabel(bestSt) + "  V=" + best[2].toFixed(3) + " m³  P=" + Math.round(best[3]) + " kPa";
+    } else {
+      els.tooltip.style.opacity = "0";
+    }
+  });
+  els.chart.addEventListener("mouseleave", function(){ els.tooltip.style.opacity = "0"; });
+
+  // ---------------- Transport controls ----------------
+  var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var DURATION = 3200;
+
+  function step(t){
+    if (!state.playing) return;
+    if (state.lastT === null) state.lastT = t;
+    var dt = t - state.lastT; state.lastT = t;
+    state.s += dt / DURATION;
+    if (state.s >= 1){ state.s = 1; state.playing = false; els.playBtn.innerHTML = "&#9654; Play"; }
+    els.scrub.value = state.s;
+    updateCylinders();
+    renderChart();
+    if (state.playing) requestAnimationFrame(step);
+  }
+
+  els.playBtn.addEventListener("click", function(){
+    if (state.playing){
+      state.playing = false;
+      els.playBtn.innerHTML = "&#9654; Play";
+      return;
+    }
+    if (state.s >= 1) state.s = 0;
+    state.playing = true;
+    state.lastT = null;
+    els.playBtn.innerHTML = "&#10074;&#10074; Pause";
+    if (reduceMotion){
+      state.s = 1; els.scrub.value = 1; updateCylinders(); renderChart();
+      state.playing = false; els.playBtn.innerHTML = "&#9654; Play";
+    } else {
+      requestAnimationFrame(step);
+    }
+  });
+
+  els.resetBtn.addEventListener("click", function(){
+    state.playing = false; state.s = 0; els.scrub.value = 0;
+    els.playBtn.innerHTML = "&#9654; Play";
+    updateCylinders(); renderChart();
+  });
+
+  els.scrub.addEventListener("input", function(){
+    state.playing = false; els.playBtn.innerHTML = "&#9654; Play";
+    state.s = parseFloat(els.scrub.value);
+    updateCylinders(); renderChart();
+  });
+
+  [els.P1, els.V1, els.V2].forEach(function(inp){
+    inp.addEventListener("input", renderAll);
+  });
+
+  buildRig();
+  renderAll();
+})();
+</script>
