@@ -1,6 +1,6 @@
 # Thermodynamics
 
-Interactive thermodynamics teaching materials for ES 305, Embry-Riddle Aeronautical University.
+Interactive thermodynamics teaching materials
 
 ## Contents
 
